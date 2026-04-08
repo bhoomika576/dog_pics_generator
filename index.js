@@ -42,5 +42,5 @@ app.get("/", async (req, res) => {
   res.send(`Breed : ${breed}\nImage : ${imageUrl}\nFact  : ${fact}\n`);
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Running on port ${PORT}`));
+// 👇 This is the key change for Vercel
+module.exports = app;
