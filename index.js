@@ -26,21 +26,10 @@ app.get("/", async (req, res) => {
   const imgData = await imgRes.json();
   const imageUrl = imgData.message;
 
-  const factReply = await groq.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
-    messages: [
-      {
-        role: "user",
-        content: `Give me one short, fun fact about the ${breed} dog breed. Reply with just the fact, no intro, no extra text.`,
-      },
-    ],
-  });
-
-  const fact = factReply.choices[0].message.content.trim();
 
   res.setHeader("Content-Type", "text/plain");
-  res.send(`Breed : ${breed}\nImage : ${imageUrl}\nFact  : ${fact}\n`);
+  res.send(`Breed : ${breed}\nImage : ${imageUrl}\n`);
 });
 
-// 👇 This is the key change for Vercel
-module.exports = app;
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Running on port ${PORT}`));
