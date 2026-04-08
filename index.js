@@ -31,5 +31,11 @@ app.get("/", async (req, res) => {
   res.send(`Breed : ${breed}\nImage : ${imageUrl}\n`);
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Running on port ${PORT}`));
+// Keep this for local dev
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => console.log(`Running on port ${PORT}`));
+}
+
+// This is what Vercel needs
+module.exports = app;
