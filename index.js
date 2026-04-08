@@ -1,57 +1,46 @@
 require("dotenv").config();
-
 const express = require("express");
 const Groq = require("groq-sdk");
 
 const app = express();
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-// get all breeds
-async function getAllBreeds() {
-  const res = await fetch("https://dog.ceo/api/breeds/list/all");
-  const data = await res.json();
-  return Object.keys(data.message);
-}
+app.get("/", async (req, res) => {
+  const breedsRes = await fetch("https://dog.ceo/api/breeds/list/all");
+  const breedsData = await breedsRes.json();
+  const breeds = Object.keys(breedsData.message);
 
-// get image
-async function getRandomImage(breed) {
-  const res = await fetch(`https://dog.ceo/api/breed/${breed}/images/random`);
-  const data = await res.json();
-  return data.message;
-}
+  const pickBreed = await groq.chat.completions.create({
+    model: "llama-3.3-70b-versatile",
+    messages: [
+      {
+        role: "user",
+        content: `Here is a list of dog breeds: ${breeds.join(", ")}. Pick one at random and reply with ONLY the breed name, nothing else.`,
+      },
+    ],
+  });
 
-app.get("/dog", async (req, res) => {
-  try {
-    const breeds = await getAllBreeds();
+  const breed = pickBreed.choices[0].message.content.trim().toLowerCase();
 
-    // use Groq to pick a breed
-    const completion = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        {
-          role: "system",
-          content: `Pick ONE random dog breed from this list and return ONLY the name in lowercase: ${breeds.join(", ")}`,
-        },
-      ],
-    });
+  const imgRes = await fetch(`https://dog.ceo/api/breed/${breed}/images/random`);
+  const imgData = await imgRes.json();
+  const imageUrl = imgData.message;
 
-    const breed = completion.choices[0].message.content.trim().toLowerCase();
+  const factReply = await groq.chat.completions.create({
+    model: "llama-3.3-70b-versatile",
+    messages: [
+      {
+        role: "user",
+        content: `Give me one short, fun fact about the ${breed} dog breed. Reply with just the fact, no intro, no extra text.`,
+      },
+    ],
+  });
 
-    const image = await getRandomImage(breed);
+  const fact = factReply.choices[0].message.content.trim();
 
-       res.setHeader("Content-Type", "text/plain");
-    res.send(
-`
-breed: ${breed}
-image: ${image}
-`
-    );
-
-  } catch (err) {
-    res.status(500).send(`error: ${err.message}`);
-  }
+  res.setHeader("Content-Type", "text/plain");
+  res.send(`Breed : ${breed}\nImage : ${imageUrl}\nFact  : ${fact}\n`);
 });
 
-app.listen(3000, () => {
-  console.log("http://localhost:3000/dog");
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Running on port ${PORT}`));
