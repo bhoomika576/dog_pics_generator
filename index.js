@@ -3,7 +3,12 @@ const express = require("express");
 const Groq = require("groq-sdk");
 
 const app = express();
+const cors = require("cors");
+app.use(cors());
+
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+app.use(express.static("public"));
 
 app.get("/", async (req, res) => {
   const breedsRes = await fetch("https://dog.ceo/api/breeds/list/all");

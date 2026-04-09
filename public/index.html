@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Random Dog</title>
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #dcd6cd;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    h1 {
+        margin-top: 40px;
+        font-size: 40px;
+        color: #2d241c;
+    }
+
+    p {
+        color: #6b5c4f;
+        margin-top: -10px;
+    }
+
+    .card {
+        margin-top: 30px;
+        width: 450px;
+        border-radius: 20px;
+        overflow: hidden;
+        background: #eee;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.901);
+    }
+
+    .image-box {
+        height: 300px;
+        background-color: #cfc6ba;
+    }
+
+    .content {
+        padding: 40px;
+        text-align: center;
+    }
+
+    .breed {
+        font-size: 20px;
+        letter-spacing: 2px;
+        color: #7a6a5a;
+    }
+
+    .breed-name {
+        margin: 20px;
+        font-weight: bold;
+    }
+
+    button {
+        margin-top: 25px;
+        padding: 18px;
+        width: 100%;
+        border: none;
+        border-radius: 30px;
+        background-color: #c8652e;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #a65325;
+    }
+
+    body {
+    background-color: #dcd6cd;
+
+    background-image: repeating-linear-gradient(
+        45deg,
+        rgba(0,0,0,0.03),
+        rgba(0,0,0,0.03) 1px,
+        transparent 1px,
+        transparent 10px
+    );
+}
+
+
+
+</style>
+</head>
+<body>
+
+<h1>Random Dog 🐾</h1>
+<p>Get a random picture of a dog!</p>
+
+<div class="card">
+    <div class="image-box" id="dogImage"></div>
+
+    <div class="content">
+        <div class="breed">BREED</div>
+        <div class="breed-name" id="breedName">---</div>
+
+        <button onclick="fetchDog()">click me</button>
+    </div>
+</div>
+
+<script>
+async function fetchDog() {
+    const res = await fetch("https://dog-pics-generator.vercel.app/");
+    const text = await res.text();
+
+    // Split response
+    const lines = text.split("\n");
+    const breed = lines[0].replace("Breed : ", "").trim();
+    const image = lines[1].replace("Image : ", "").trim();
+
+    // Update UI
+    document.getElementById("dogImage").innerHTML =
+        `<img src="${image}" style="width:100%; height:100%; object-fit:cover;">`;
+
+    document.getElementById("breedName").innerText = breed;
+}
+</script>
+
+</body>
+</html>
