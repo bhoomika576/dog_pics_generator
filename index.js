@@ -10,7 +10,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 app.use(express.static("public"));
 
-app.get("/", async (req, res) => {
+app.get("/api", async (req, res) => {
   const breedsRes = await fetch("https://dog.ceo/api/breeds/list/all");
   const breedsData = await breedsRes.json();
   const breeds = Object.keys(breedsData.message);
@@ -36,11 +36,10 @@ app.get("/", async (req, res) => {
   res.send(`Breed : ${breed}\nImage : ${imageUrl}\n`);
 });
 
-// Keep this for local dev
+
 if (process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => console.log(`Running on port ${PORT}`));
 }
 
-// This is what Vercel needs
 module.exports = app;

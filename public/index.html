@@ -104,7 +104,7 @@
 
 <script>
 async function fetchDog() {
-    const res = await fetch("https://dog-pics-generator.vercel.app/");
+    const res = await fetch("https://dog-pics-generator.vercel.app/api");
     const text = await res.text();
 
     // Split response
